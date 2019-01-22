@@ -1,0 +1,562 @@
+import { Appear } from 'mdx-deck'
+import Layout from './Layout'
+import { Trace } from './Trace';
+
+export { default as theme } from './theme'
+
+export default Layout
+
+# De React 16.4 à <s>16.7</s> 16.9
+## nouveautés, _hooks_, … et moi et moi et moi ‽
+
+React Nantes n° 4 — Jeudi 29 novembre 2018
+
+Yann Picard de Muller
+
+Dev Fullstack JS, Beekast
+
+[@YannPdeM](https://twitter.com/YannPdeM),  [github.com/YannPdeM](https://github.com/YannPdeM)
+
+[CC-BY-NC-SA-4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+---
+export default Layout
+
+# React ?
+<ul>
+<Appear>
+<li>lib UI</li>
+<li>DOM virtuel : conciliation</li>
+<li>Versionnement sémantique</li>
+<li>Gros effort de compatibilité</li>
+<li><i>Fiber</i></li>
+<li>Composants</li>
+</Appear>
+</ul>
+
+---
+export default Layout
+
+# Lib UI
+<ul>
+<Appear>
+<li>Pas un <i>Framework</i></li>
+<li>Ne gère pas Ajax, LocalStorage, … pour nous</li>
+<li><code>redux</code>, <code>knockout</code>, <code>backbone</code>, …</li>
+</Appear>
+</ul>
+
+---
+export default Layout
+
+# Versionnement sémantique
+
+<ul>
+<Appear>
+<li><code>X.Y.Z</code> (ex : <code>v16.6.3</code>)</li>
+<li><code>Z</code> : corrections</li>
+<li><code>Y</code> : nouvelles fonctionnalités (+ parfois des corrections)</li>
+<li><code>X</code> : changement qui casse le code existant (ex : les méthodes dépréciées de cycle de vie vont être renommées en <code>unstable_AncienNom</code>)</li>
+</Appear>
+</ul>
+
+---
+export default Layout
+
+# _Fiber_ : <s>_async_</s> _concurrent_ React
+
+* multi-tâche coopératif
+* Coroutines
+* Scheduler
+
+---
+export default Layout
+
+# Composants (1/4)
+
+* `render(props)`
+* cycle de vie
+
+---
+export default Layout
+
+# Composants (2/4) : le _render_
+
+<ul>
+<Appear>
+<li><code>render(props)</code> -> <code>render(state, props, context)</code></li>
+<li><i>state</i> : l’état du composant (ex. : plié/déplié pour un accordéon)</li>
+<li><i>props</i> : le paramétrage du composant</li>
+<li><i>context</i> :<ul>
+    <li>API expérimentale et dépréciée</li>
+    <li>API React 16</li>
+    </ul></li>
+</Appear>
+</ul>
+
+---
+export default Layout
+
+# Composants (3a/4) : le cycle de vie
+
+## Montage
+* `constructor`
+* <s>`componentWillMount`</s>
+* `getDerivedStateFromProps(nextProps, prevState)`
+* `render`
+* conciliation
+* `componentDidMount`
+
+---
+export default Layout
+
+# Composants (3b/4) : le cycle de vie
+
+## Mise-à-jour
+* <s>`componentWillReceiveProps(nextProps)`</s>
+* `getDerivedStateFromProps(nextProps, prevState)`
+* `shouldComponentUpdate(nextProps, nextState, nextContext)`
+* <s>`componentWillUpdate(nextProps, nextState)`</s>
+* conciliation
+* `getSnapshotBeforeUpdate(prevProps, prevState)`
+* `componentDidUpdate(prevProps, prevState, prevContext)`
+
+---
+export default Layout
+
+# Composants (3c/4) : le cycle de vie
+
+## Cas spécial
+* `componentDidCatch(errorString, errorInfo)`
+
+## Démontage
+* `componentWillUnmount`
+---
+export default Layout
+
+# Composants (4a/4) : types de composants
+## “Function _Components_”
+### parfois appelés à tort “_Stateless Components_”
+```jsx
+const MonComposant = (props) => <p>Hello {props.name}!</p>
+```
+
+---
+export default Layout
+
+# Composants (4b/4) : types de composants
+## `React.Component`
+```jsx
+class MonComposant extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      greetings: `Hello ${props.name}!`
+    };
+  }
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    return nextProps === this.props && nextState === this.state;
+  }
+  render () {
+    return <p>{this.state.greetings}</p>
+  }
+}
+```
+
+---
+export default Layout
+
+# Composants (4c/4) : types de composants
+## `React.PureComponent`
+```jsx
+class MonComposant extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      greetings: `Hello ${props.name}!`
+    };
+  }
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    return nextProps === this.props && nextState === this.state;
+  }
+  render () {
+    return <p>{this.state.greetings}</p>
+  }
+}
+```
+Attention les mises-à-jour des _props_ ne sont pas faites pour les sous-composants, il faut donc qu’ils soient eux-même des PureComponents
+
+---
+export default Layout
+
+# Et moi demain ‽
+
+Petite proposition :
+
+1. plan de risque<ul><li>`create-react-class` & _mixins_ __versus__ intégration de nouveaux</li><li>partie plus faciles à migrer ?</li><li>tests de non-régression ?</li></ul>
+2. Passer à React 16 si ce n’est pas déjà fait ;-)
+3. Plan de migration pour les méthodes dépréciées (viser 2020 sans avoir à utiliser les `unstable_`)
+4. Utiliser `<StricMode>` pour découvrir les points faibles de l’application
+
+---
+export default Layout
+
+# React 16.4
+
+<ol>
+<Appear>
+<li>_Pointer Events_<ul><li>une interface unifiée pour la souris, le toucher, les stylets, …</li><li>pas encore supporté par Apple/Safari 😭</li></ul></li>
+<li>une correction pour `getDerivedStateFromProps` qui est maintenant appelée à chaque `render` quelle qu’en soit la cause</li>
+<li>une mise-à-jour de sécurité pour le rendu côté serveur en août</li>
+</Appear>
+</ol>
+
+---
+export default Layout
+
+# React 16.4
+
+```jsx
+const props = {
+  userProvidedData: '></div><script>alert("hello world!")</script>'
+};
+const element = <div {...props} />;
+const html = ReactDOMServer.renderToString(element);
+```
+
+Avant :
+`<div ></div><script>alert("hello world!")</script>`
+
+Après :
+`<div></div>`
+
+---
+export default Layout
+
+# Et moi demain ‽
+* Est-ce que j’utilise déjà les _Pointer Events_ ? Avec un Polyfill ? L’ai-je bien testé (chrome sur iPhone, Safari sur Mac, …) ?
+* Ai-je un plan d’action pour quand Apple aura fini de les implémenter ? Comment serais-je au courant ?
+* `getDerivedStateFromProps` étant fiable, me suis-je débarassé des usages de `componentWillReceiveProps` ?
+
+---
+export default Layout
+
+# React 16.5
+* API expérimentale + outil de trace
+```jsx
+import { unstable_trace as trace } from "scheduler/tracing";
+
+class MyComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.onClick.bind(this);
+  }
+  
+  onClick () {
+    trace('Login button click', performance.now(), () => {
+      this.setState({ isLoggingIn: true });
+    });
+  };
+
+  render () {
+    return (
+      <button onClick={onClick}>Click!</button>
+    );
+  } 
+}
+```
+
+---
+export default Layout
+
+# Et moi demain ‽
+* se faire la main sur des POCs
+* Étudier ma/mes applis 
+
+---
+export default Layout
+
+# React 16.6
+* memo
+* React.lazy()
+* `<Suspense />`
+* `static contextType`
+* `getDerivedStateFromError()`
+* nouvelles dépréciations en `<StrictMode />`
+
+---
+export default Layout
+
+# React 16.6 : memo
+```jsx
+import React, { memo } from 'react';
+const composantSystématiquementRecalculé = (props) => <p>Hello {props.name}!</p>
+const composantMemoïsé = memo(
+    composantSystématiquementRecalculé,
+    (prevProps, nextProps) => prevProps.name === nextProps.name
+);
+```
+
+Composant d’ordre supérieur
+
+React réutilise autant que possible le rendu tant que les props n’ont pas changé.
+
+⚠️ le fonctionnement est l’inverse de shouldComponent update :
+* On dit quand il faut réutiliser le changement
+* React peut décider d’en refaire un rendu quand même
+
+---
+export default Layout
+
+# React 16.6 : React.lazy et `<Suspense />`
+```jsx
+import React, { lazy, Suspense } from 'react';
+const ComposantDynamiquementImporte = lazy(() => import('./ProchainePage'));
+const MonComposant = () => (<Suspense fallback={<div>Chargement…</div>}>
+  <ComposantDynamiquementImporte />
+</Suspense>);
+```
+
+L’import dynamique peut être fait par WebPack
+
+Suspense met en pause le rendu du composant, et fourni une alternative en attendant que le composant soit prêt
+
+
+---
+export default Layout
+
+# React 16.6 : `<Suspense />`
+```jsx
+import React, { lazy, Suspense } from 'react';
+const UnComposantRapidementCharge = lazy(() => import('./ComposantRapide'));
+const UnComposantLentementCharge = lazy(() => import('./ComposantLent'));
+const MonComposant = () => (<Suspense fallback={<div>Chargement…</div>}>
+  <UnComposantRapidementCharge />
+  <Suspense fallback={<div>Chargement…</div>}>
+    <UnComposantLentementCharge />
+  </Suspense>
+</Suspense>);
+
+```
+
+En mettant des `<Suspense />` dans des `<Suspense />` on peut gérer le chargement progressif d’une page.
+
+---
+export default Layout
+
+# React 16.6 : static contextType
+
+```jsx
+const MonContexte = React.createContext();
+
+class MonComposant extends React.Component {
+  static contextType = MyContext;
+  componentDidMount () {
+    const value = this.context;
+    …
+  }
+  
+  render () {
+    const value = this.context;
+    …
+  }
+}
+```
+
+---
+export default Layout
+
+# React 16.6 : getDerivedStateFromError()
+Permet d’avoir un rendu de prêt au render
+
+```jsx
+class MonComposant extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      hasError: false
+    };
+  }
+
+  static getDerivedStateFromError (error) {
+    return {
+      hasError: false
+    };
+  }
+  
+  componentDidCatch(error, info) {
+    console.error(error, info);
+  }
+  
+  render () {
+    return this.state.hasError
+      ? <h1>Ayeuh</h1>
+      : this.props.children;
+  }
+}
+```
+
+⚠️ `componentDidCatch` n’est plus supposé gérer que les effets de bords et ne plus appeler `this.setState()`
+
+---
+export default Layout
+
+# React 16.6 : nouvelles dépréciations
+* `ReactDOM.findDOMNode()` -> utiliser les _refs_
+* l’ancienne API de contexte, ⚠️ certaines libs (ex : `react-redux`) l’utilisent beaucoup et sont en cours de migration
+
+---
+export default Layout
+
+# Et moi demain ‽
+* Y a-t-il des endroits où l’emploi de `React.memo` ferait du bien à mes utilisateurs ?
+* Est-ce que j’utilise déjà les imports dynamiques ? Si oui, lesquels profiteraient de `React.lazy` ?
+* Et si je remplaçait `react-loader` et consorts par `React.lazy` + `<Suspense />` ?
+* Si l’accès au contexte me liait à l’ancienne API, qu’en est-il maintenant ?
+* Mon code est-il à jour par rapport aux dépréciations ? Et celui des dépendances ? La migration est-elle au moins en cours ? Si non, faut-il un coup de main ? Un plan B ?
+
+---
+export default Layout
+
+# React 16.7 : Q1 2019
+## _Hooks_
+* useState
+* useEffect
+* règles des _hooks_
+* quelques autres _hooks_ 
+
+---
+export default Layout
+
+# React 16.7 : hooks
+## `useState`
+
+```jsx
+const ExempleUseState = () => {
+  const [checkedIn, setCheckedIn] = useState(false);
+  const [count, setCount] = useState(0);
+ 
+  return {
+    <div>
+      {checkedIn ? (
+        <button onClick={() => setCheckedIn(true)>check-in</button>
+      ) : (
+        <button onClick={() => setCount(count + 1)>Vous avez cliqué {count} fois</button>
+      )}
+    </div>
+  };
+};
+ ```
+
+⚠️ contrairement à `React.Component.setState()` ici les états ne sont pas fusionnés
+
+😃 on peut avoir différents états en parallèle
+
+---
+export default Layout
+
+# React 16.7 : hooks
+## `useEffect`
+
+```jsx
+const log = () => console.log(Date.now());
+
+const ExempleUseEffect = () => {
+  useEffect(() => {
+    const intervalHandle = setInterval(log, 5000);
+    return () => clearInterval(intervalHandle);
+  });
+ 
+  return {
+    <div>useEffect</div>
+  };
+};
+ ```
+
+---
+export default Layout
+
+# React 16.7 : hooks
+## règles
+
+* Attention à l’ordre
+* Seulement dans un composant React ou un autre _hook_
+* Pas dans des `if`, boucles, …
+
+---
+export default Layout
+
+# Quelques autres hooks
+* `useContext(MonContexte)`
+* `useReducer`
+* `useMemo`
+* `useRef`
+* `useLayoutEffect` ⚠️ 
+
+```jsx
+const useOldSetState = (initialState) => {
+  const [state, setState] = useReducer(
+    (state, newState) => ({...state, ...newState}),
+    initialState,
+  )
+  return [state, setState]
+};
+```
+
+
+
+
+
+
+---
+export default Layout
+
+# Et moi demain ‽
+* Attendre un peu une fois que ce sera sorti
+* Ce sera le moment de faire de la veille et de laisser les furieux se casser les dents
+* Ensuite, ce sera le moment de se débarasser des _mixins_
+* Dans la mesure du possible coder les nouveaux composants avec les _hooks_
+* Quelques mois plus tard, migrer les composants
+
+---
+export default Layout
+
+# React 16.8 : Q2 2019
+* `<React.Concurrent />`
+
+---
+export default Layout
+
+# Et moi demain ‽
+* Être bien préparé(e) pour les méthodes dépréciées
+* Savoir distinguer 2 types de priorités : normale ou liée à une action de l’utilisateur (click)
+
+---
+export default Layout
+
+# React 16.9 : mi-2019
+* `React.Cache`
+
+---
+export default Layout
+
+# Et moi demain ‽
+* _A priori_ rien, ce sera surtout pour les fournisseurs de librairies : Apollo, Relay, …
+
+---
+export default Layout
+
+# Courant 2019
+* `React.DOM` modernisé
+* `<Suspense />` côté serveur
+
+---
+export default Layout
+
+# React … 17 ?
+* async/concurrent par défaut
+* méthodes dépréciées recalées en `unstable_`
+* `</class>`
+
+---
+# Q & R
